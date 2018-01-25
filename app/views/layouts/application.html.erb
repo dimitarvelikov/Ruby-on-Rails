@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Csa</title>
+  <%= csrf_meta_tags %>
+
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+
+  <script>
+ //this script is used for the user's post notifications
+ //it changes the css display value of the object with id myDIV on mouse click event
+      function dropDown() {
+          var x = document.getElementById("myDIV");
+          if (x.style.display === "none") {
+              x.style.display = "block";
+
+          } else {
+              x.style.display = "none";
+          }
+      }
+  </script>
+
+</head>
+<body id="<%= params[:controller].parameterize %>_controller">
+
+<div class="header">
+  <%= render :partial => 'sessions/login' %>
+  <div class="navigation">
+    <%= render_navigation %>
+  </div>
+
+  <!-- if the user is logged in show the notification bar in the header of the page
+  display each notification of the user with the name of the thread and the date details-->
+  <% if logged_in? %>
+    <div class="post_notifications_block" onclick="dropDown()"><p>Notifications <% if logged_in?; %>
+        <% unseen_counter = 0 %>
+        <% User.find(current_user.id).post_notifications.each do |post_notification|%>
+          <% if post_notification.seen == false %>
+            <% unseen_counter += 1 %>
+          <% end %> <% end %>
+      <% end %> (<%= unseen_counter %>) </p>
+        <div id="myDIV" style="display:none;font-size:10px;text-align:left"></br>
+          <% User.find(current_user.id).post_notifications.each do |post_notification| %>
+            <%= link_to "New reply was posted in " + Comment.find(post_notification.post_id).title , comment_path(post_notification.post_id) %>
+            </br>
+            <%= post_notification.updated_at.strftime("%a %d %b  %H:%M")%>
+            </br>
+          <% end %>
+        </br>
+        <%= link_to "See all notifications",    user_post_notifications_path(current_user.id) %>
+        </div>
+
+        </div>
+      <% end %>
+
+      <% flash.each do |key, value| %>
+    <span class="flash_<%= key %>">
+      <span class="flash_message"><%= value %></span>
+    </span>
+      <% end %>
+
+      <!-- Blank URI so browser will request current page when form submitted -->
+      <%= form_tag '', method: 'GET', class: 'locale' do %>
+        <%= select_tag 'locale', options_for_select(LANGUAGES, I18n.locale), \
+                       onchange: 'this.form.submit()' %>
+        <%= submit_tag 'Submit', id: 'locale-submit' %>
+      <% end %>
+
+      </div>
+
+      <div class="content">
+        <% if logged_in? && User.find(current_user.id).show_notifications %>
+          <%= render :partial => 'notifications/notifications' %>
+        <% end %>
+        <%= yield %>
+      </div>
+
+      <div id="footer">
+      </div>
+
+      </body>
+      </html>

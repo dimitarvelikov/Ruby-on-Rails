@@ -1,0 +1,27 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Read Post Ids</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @read_post_ids.each do |read_post_id| %>
+      <tr>
+        <td><%= read_post_id.id %></td>
+        <td><%= link_to 'Show', read_post_id %></td>
+        <td><%= link_to 'Edit', edit_read_post_id_path(read_post_id) %></td>
+        <td><%= link_to 'Destroy', read_post_id, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Read Post', new_read_post_id_path %>

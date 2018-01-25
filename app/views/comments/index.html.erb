@@ -1,0 +1,74 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Threads</h1></br>
+
+<table>
+  <thead>
+  <tr>
+    <th>Author</th>
+    <th>Title</th>
+
+
+    <th style="min-width: 75px">Posts</th>
+    <th>Unread Posts</th>
+    <th>Date</th>
+
+
+    <th colspan="5"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+
+  <% @comments.each do |comment| %>
+    <% @read_post = 0 %>
+    <tr class="data">
+      <% if comment.anonymous %>
+        <td class="uid">Anonymous</td>
+      <% else %>
+        <td class="uid"><%= User.find(comment.user_id).firstname + ' ' + User.find(comment.user_id).surname %></td>
+      <% end %>
+      <td style="min-width:300px;" class="title"><%= link_to comment.title, comment_path(comment, page: @current_page) %></td>
+
+
+      <td class="replies"> <%= comment.replies_count %></td>
+      <td class="unseen_replies">
+        <% Reply.all.each do |reply| %>
+          <% if !User.find(current_user.id).read_post_ids.exists?(:read_id => reply.id) && reply.post_id == comment.id %>
+            <% @read_post = @read_post + 1 %>
+          <% end %>
+        <% end %>
+        <%= @read_post %>
+      </td>
+
+      <% if comment.replies.count > 0 %>
+        <td><%= comment.updated_at.strftime("%d/%m/%y %H:%M") %></td>
+      <% else %>
+        <td><%= comment.updated_at.strftime("%d/%m/%y %H:%M") %></td>
+      <% end %>
+
+      <% if comment.user_id == current_user.id || is_admin? %>
+        <td><%= link_to image_tag('edit.png', alt: I18n.t('edit'),
+                                  title: I18n.t('edit-item'), border: '0'),
+                        edit_comment_path(comment, page: @current_page) %></td>
+
+        <td><%= link_to image_tag('destroy.gif', alt: I18n.t('destroy'),
+                                  title: I18n.t('destroy-item'), border: '0',),
+                        comment_path(comment, page: @current_page),
+                        data: {confirm: I18n.t('are-you-sure')},
+                        method: :delete %></td>
+      <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>
+<div class="digg_pagination">
+  <div class="page_info">
+    <%= page_entries_info @comments %>
+  </div>
+  <%= will_paginate @comments, container: false %>
+</div>
+
+<%= link_to 'Create Thread', new_comment_path(page: @comments.current_page), id: :create_thread %>

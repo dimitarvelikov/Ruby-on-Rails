@@ -1,0 +1,5 @@
+<h1>New Reply</h1>
+
+<%= render 'form', reply: @reply, comment: @comment %>
+
+<%= link_to 'Back', comment_path(params[:comment_id]) %>

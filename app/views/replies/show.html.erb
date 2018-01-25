@@ -1,0 +1,16 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+
+</br>
+  <strong>Author:</strong>
+  <%= User.find(@reply.user_id).firstname + ' ' +User.find(@reply.user_id).surname  %>
+
+</br></br>
+  <strong> Content: </strong></br>
+  <%= @reply.text %>
+</p>
+
+
+<%= link_to 'Edit', edit_comment_reply_path(@reply) %> |
+<%= link_to 'Back', comment %>

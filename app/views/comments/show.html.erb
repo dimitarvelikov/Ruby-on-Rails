@@ -1,0 +1,90 @@
+<p id="notice"><%= notice %></p>
+</br>
+<p>
+  <!-- go trough each post notification of the current user
+   if there is unseen one that belongs to that post,
+  mark it as seen-->
+  <% user = User.find(current_user.id) %>
+  <% user.post_notifications.each do |post| %>
+
+    <% if post.post_id == @comment.id %>
+      <% post.seen = true %>
+      <% post.save %>
+    <% end %>
+  <% end %>
+
+  <strong>Author:</strong>
+  <% if @comment.anonymous == false %>
+    <%= User.find(@comment.user_id).firstname + ' ' + User.find(@comment.user_id).surname %>
+
+  <% else %>
+    Anonymous
+  <% end %>
+</p>
+<p>
+  <strong>Title:</strong>
+  <%= @comment.title %>
+</p>
+
+<p>
+  <strong>Content:</strong>
+  <%= @comment.content %>
+</p>
+
+<p>
+  <strong>Posted:</strong>
+  <%= @comment.created_at.strftime("%d/%m/%y %H:%M") %>
+</p>
+
+</br></br>
+
+<%= link_to 'Reply', new_comment_reply_path(@comment, :post_id => @comment.id, :title => @comment.title, :child_number => 0) %>
+<h3>Replies</h3>
+
+
+
+
+<!--
+#
+#Breadth First Search implemented below to display the nested replies
+# Until the array with all parent replies is empty
+# remove a reply from the array and dislpay its data
+# add all the child replies of the removed reply
+-->
+<% replies_holder = []; replies_holder.push(*@comment.replies); %>
+<% until replies_holder.empty? %>
+
+  <% reply = replies_holder.pop() %>
+
+  <div class="reply" style="margin-left: <%= 50 * reply.child_number%>px;">
+    <div class="reply_author">
+      <h5>
+        <% if reply.anonymous %>
+          Anonymous
+        <% else %>
+          <%= User.find(reply.user_id).firstname + ' ' + User.find(reply.user_id).surname %>
+        <% end %>
+        </br> </br>
+      </h5>
+      <h6> <%= reply.created_at.strftime("%H:%M") %></br><%= reply.created_at.strftime("%d/%m/%y") %></h6>
+    </div>
+
+    <% if !User.find(current_user.id).read_post_ids.exists?(:read_id => reply.id) %>
+      <% User.find(current_user.id).read_post_ids.create(:read_id => reply.id) %>
+    <% end %>
+
+    <div class="reply_title"><h4><%= reply.title %></h4></div>
+    <div class="reply_body"><%= reply.text %></p></div>
+    </br> </br>
+    <%= link_to 'Reply', new_reply_reply_path(@comment, :comment_id => @comment.id, :title => @comment.title, :parent_id => reply.id, :child_number => (reply.child_number + 1)) %>
+
+  </div>
+  <% replies_holder.push(*reply.replies) %>
+<% end %>
+
+
+
+<%= link_to 'Back', comments_path(page: @current_page), id: :back %>
+
+</br></br>
+

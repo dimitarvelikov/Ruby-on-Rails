@@ -1,0 +1,10 @@
+<h1>Welcome to CS-Alumni News</h1>
+<p>
+</br>
+  <% if logged_in? %>
+     <%= link_to 'Click','comments'%> to view forum threads.
+     <% else %>
+    Please <%= link_to 'login','session/new'%> to view content.
+  <% end%>
+
+    </p>

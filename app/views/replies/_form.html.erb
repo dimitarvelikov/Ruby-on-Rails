@@ -1,0 +1,49 @@
+<%=#form_with(model: @reply, url: [@comment, @reply]) do |form|
+ # form_with(model: @reply, url: [Comment.find(params[:id]), @reply]) do |form|
+
+  #form_with(model: reply) do |form|
+   #form_for(@reply) do |form|
+            form_for([Comment.find(params[:comment_id]), reply]) do |form|
+  # form_with([comment, reply]) do |form|
+                        #form_with(model: reply,  url: comment_replies_path, local: true) do |form|
+
+   # working -  form_with(model: @reply, url: [Comment.find(params[:id]), @reply]) do |form|
+%>
+<%= #form_for [:comment, @reply] do |form|
+%>
+    <%=# form_for([@comment,@comment.replies.create]) do |form|
+    %>
+  <% if reply.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(reply.errors.count, "error") %> prohibited this reply from being saved:</h2>
+
+      <ul>
+      <% reply.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field"></br>
+    <%= form.check_box :anonymous%>
+    <%= form.label(:comment_anonymous, "Tick for anonymity.") %>
+
+  </br>
+    <%= form.label(:comment_title,"Title")%>
+    <%= form.text_area :title, :value => params[:title] %>
+    <%= form.hidden_field(:post_id, :value => params[:comment_id]) %>
+    <%= form.hidden_field(:user_id, :value => current_user.id) %>
+    <%= form.hidden_field(:parent_id, :value => params[:parent_id]) %>
+    <%= form.hidden_field(:child_number, :value => params[:child_number]) %>
+
+  </div>
+    <div class="field">
+      <%= form.label :text %></br>
+      <%= form.text_area :text, id: :comment_content %>
+    </div>
+
+  <div class="actions">
+    <%= form.submit%>
+  </div>
+<% end %>
